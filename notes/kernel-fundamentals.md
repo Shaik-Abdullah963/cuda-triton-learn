@@ -32,43 +32,51 @@ Instances don't need to coordinate when their data doesn't overlap, so they can 
 
 Each instance has one ID, so the instances form a single list.
 
-| instance | `program_id(0)` |
-|---|---|
-| 1 | 0 |
-| 2 | 1 |
-| 3 | 2 |
-| 4 | 3 |
+Example: 200 elements with `B0 = 64`, so the 4 blocks are tiles of the vector.
+
+| instance | `program_id(0)` | block covers elements |
+|---|---|---|
+| 1 | 0 | 0 to 63 |
+| 2 | 1 | 64 to 127 |
+| 3 | 2 | 128 to 191 |
+| 4 | 3 | 192 to 199 (the rest are masked) |
 
 ### 2-D grid: `(4, 2)`
 
 Each instance has a pair of IDs. Every combination appears once, so there are 4 × 2 = 8 instances.
 
-| instance | `program_id(0)` | `program_id(1)` |
-|---|---|---|
-| 1 | 0 | 0 |
-| 2 | 0 | 1 |
-| 3 | 1 | 0 |
-| 4 | 1 | 1 |
-| 5 | 2 | 0 |
-| 6 | 2 | 1 |
-| 7 | 3 | 0 |
-| 8 | 3 | 1 |
+Example: an 8 × 4 matrix with `B0 = 2` and `B1 = 2`, so each instance owns one 2 × 2 tile.
+
+| instance | `program_id(0)` | `program_id(1)` | rows | columns | tile |
+|---|---|---|---|---|---|
+| 1 | 0 | 0 | 0–1 | 0–1 | top-left |
+| 2 | 0 | 1 | 0–1 | 2–3 | top-right |
+| 3 | 1 | 0 | 2–3 | 0–1 | |
+| 4 | 1 | 1 | 2–3 | 2–3 | |
+| 5 | 2 | 0 | 4–5 | 0–1 | |
+| 6 | 2 | 1 | 4–5 | 2–3 | |
+| 7 | 3 | 0 | 6–7 | 0–1 | |
+| 8 | 3 | 1 | 6–7 | 2–3 | bottom-right |
 
 Adding the two ranges (4 + 2 = 6) doesn't give the instance count. The instances are the pairs, so the count is 4 × 2.
 
 ### 3-D grid: `(2, 3, 4)`
 
-Each instance has a triple of IDs. The instances are every combination, so there are 2 × 3 × 4 = 24 of them. The full table has 24 rows. Some of them:
+Each instance has a triple of IDs. The instances are every combination, so there are 2 × 3 × 4 = 24 of them.
 
-| instance | `program_id(0)` | `program_id(1)` | `program_id(2)` |
-|---|---|---|---|
-| 1 | 0 | 0 | 0 |
-| 2 | 0 | 0 | 1 |
-| 3 | 0 | 0 | 2 |
-| 4 | 0 | 0 | 3 |
-| 5 | 0 | 1 | 0 |
-| … | … | … | … |
-| 24 | 1 | 2 | 3 |
+Example: data of shape 4 × 6 × 8 with `B0 = B1 = B2 = 2`. The grid `(2, 3, 4)` gives 2 × 3 × 4 = 24 boxes, each 2 × 2 × 2. The table shows the first few instances and the last one (24 rows in total):
+
+| instance | `program_id(0)` | `program_id(1)` | `program_id(2)` | depth | rows | columns |
+|---|---|---|---|---|---|---|
+| 1 | 0 | 0 | 0 | 0–1 | 0–1 | 0–1 |
+| 2 | 0 | 0 | 1 | 0–1 | 0–1 | 2–3 |
+| 3 | 0 | 0 | 2 | 0–1 | 0–1 | 4–5 |
+| 4 | 0 | 0 | 3 | 0–1 | 0–1 | 6–7 |
+| 5 | 0 | 1 | 0 | 0–1 | 2–3 | 0–1 |
+| … | … | … | … | … | … | … |
+| 24 | 1 | 2 | 3 | 2–3 | 4–5 | 6–7 |
+
+Here `pid0` picks the depth block, `pid1` the row block, and `pid2` the column block, the same way `pid0` and `pid1` picked the tile in the 2-D case.
 
 The first instance is `(0, 0, 0)`: all three `tl.program_id` calls return 0 for it.
 
