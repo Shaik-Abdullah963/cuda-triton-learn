@@ -28,6 +28,50 @@ The number of instances is the product of the grid entries:
 
 Instances don't need to coordinate when their data doesn't overlap, so they can run in any order or at the same time.
 
+### 1-D grid: `(4,)`
+
+Each instance has one ID, so the instances form a single list.
+
+| instance | `program_id(0)` |
+|---|---|
+| 1 | 0 |
+| 2 | 1 |
+| 3 | 2 |
+| 4 | 3 |
+
+### 2-D grid: `(4, 2)`
+
+Each instance has a pair of IDs. Every combination appears once, so there are 4 × 2 = 8 instances.
+
+| instance | `program_id(0)` | `program_id(1)` |
+|---|---|---|
+| 1 | 0 | 0 |
+| 2 | 0 | 1 |
+| 3 | 1 | 0 |
+| 4 | 1 | 1 |
+| 5 | 2 | 0 |
+| 6 | 2 | 1 |
+| 7 | 3 | 0 |
+| 8 | 3 | 1 |
+
+Adding the two ranges (4 + 2 = 6) doesn't give the instance count. The instances are the pairs, so the count is 4 × 2.
+
+### 3-D grid: `(2, 3, 4)`
+
+Each instance has a triple of IDs. The instances are every combination, so there are 2 × 3 × 4 = 24 of them. The full table has 24 rows. Some of them:
+
+| instance | `program_id(0)` | `program_id(1)` | `program_id(2)` |
+|---|---|---|---|
+| 1 | 0 | 0 | 0 |
+| 2 | 0 | 0 | 1 |
+| 3 | 0 | 0 | 2 |
+| 4 | 0 | 0 | 3 |
+| 5 | 0 | 1 | 0 |
+| … | … | … | … |
+| 24 | 1 | 2 | 3 |
+
+The first instance is `(0, 0, 0)`: all three `tl.program_id` calls return 0 for it.
+
 ## 3. `tl.program_id(axis)`
 
 `tl.program_id(axis)` returns the ID of the current instance along one axis, counting from 0 up to that axis's grid size minus 1.
